@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "restartmgr"
+version = "1.0.0"
+description = "Python ctypes bindings for the Windows Restart Manager API (rstrtmgr.dll)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.12"
+authors = [
+    { name = "Modding Forge", email = "info@moddingforge.com" },
+]
+keywords = [
+    "restart-manager",
+    "windows",
+    "file-locking",
+    "ctypes",
+    "rstrtmgr",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: System :: Operating System",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Modding-Forge/restartmgr.py"
+Repository = "https://github.com/Modding-Forge/restartmgr.py"
+"Bug Tracker" = "https://github.com/Modding-Forge/restartmgr.py/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.15",
+    "hatchling>=1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/restartmgr"]
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+include = ["src", "tests"]
+
+[tool.ruff]
+line-length = 90
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["UP045"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+log_cli = true
+log_cli_level = "DEBUG"
+addopts = "-vv"
