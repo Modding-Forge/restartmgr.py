@@ -2,10 +2,7 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/restartmgr)](https://pypi.org/project/restartmgr/) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/restartmgr)](https://pypi.org/project/restartmgr/) [![PyPI - License](https://img.shields.io/pypi/l/restartmgr)](LICENSE) [![Tests](https://github.com/Modding-Forge/restartmgr.py/actions/workflows/ci.yml/badge.svg)](https://github.com/Modding-Forge/restartmgr.py/actions/workflows/ci.yml)
 
-Python ctypes bindings for the **Windows Restart Manager API**
-(`rstrtmgr.dll`). Find out which processes are locking a file - and
-optionally shut them down and restart them - all from pure Python, no C
-extension required.
+Python ctypes bindings for the **Windows Restart Manager API**  `rstrtmgr.dll`). Find out which processes are locking a file - and optionally shut them down and restart them - all from pure Python, no C extension required.
 
 > **Windows only** - calls `rstrtmgr.dll` directly via `ctypes`.
 > Zero runtime dependencies.
@@ -88,7 +85,4 @@ MIT - see [LICENSE](LICENSE).
 
 ## About Modding Forge
 
-restartmgr was built for the Python tooling powering
-**[Modding Forge](https://moddingforge.com)** - a community dedicated to
-Skyrim modding. If you enjoy modding or want to connect with other modders,
-come say hi!
+restartmgr was built for the Python tooling powering **[Modding Forge](https://moddingforge.com)** - a community dedicated to Skyrim modding. If you enjoy modding or want to connect with other modders, come say hi!

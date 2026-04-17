@@ -2,12 +2,10 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import ctypes
 import logging
 from collections.abc import Callable
-from typing import Optional
+from typing import Optional, Self
 
 from ._const import (
     CCH_RM_SESSION_KEY,
@@ -26,7 +24,7 @@ from ._errors import (
 )
 from ._structs import RM_PROCESS_INFO, RM_UNIQUE_PROCESS
 
-log: logging.Logger = logging.getLogger("RmSession")
+log: logging.Logger = logging.getLogger("restartmgr.session")
 """Module-level logger."""
 
 _MAX_RETRY: int = 5
@@ -449,7 +447,7 @@ class RmSession:
                 "No active session. Call start() first.",
             )
 
-    def __enter__(self) -> RmSession:
+    def __enter__(self) -> Self:
         """
         Starts the session and returns `self`.
 
@@ -469,6 +467,10 @@ class RmSession:
         """
         Ends the session unconditionally.
 
+        If the body raised an exception and `end()` also
+        fails, the cleanup error is suppressed so that the
+        original exception propagates.
+
         Args:
             exc_type (Optional[type[BaseException]]): The
                 exception type, if any.
@@ -477,4 +479,12 @@ class RmSession:
             exc_tb (object): The traceback, if any.
         """
 
-        self.end()
+        try:
+            self.end()
+        except Exception:
+            if exc_type is None:
+                raise
+            log.debug(
+                "end() raised during __exit__ cleanup; "
+                "suppressed to preserve original exception.",
+            )

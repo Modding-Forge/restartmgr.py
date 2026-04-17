@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import ctypes
 
 from ._const import CCH_RM_MAX_APP_NAME, CCH_RM_MAX_SVC_NAME

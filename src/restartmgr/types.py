@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import datetime
 from dataclasses import dataclass
 from typing import Optional
@@ -62,8 +60,8 @@ class GetListResult:
     `RmGetList` call.
     """
 
-    processes: list[ProcessInfo]
-    """List of processes using registered resources."""
+    processes: tuple[ProcessInfo, ...]
+    """Tuple of processes using registered resources."""
 
     reboot_reason: RmRebootReason
     """Flags describing why a reboot may be needed."""

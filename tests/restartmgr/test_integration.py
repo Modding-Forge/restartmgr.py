@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import subprocess
 import sys
 from pathlib import Path
@@ -152,7 +150,7 @@ class TestGetLockingProcessesIntegration:
         result: GetListResult = get_locking_processes(target)
 
         # then
-        assert result.processes == []
+        assert result.processes == ()
         assert result.reboot_reason == RmRebootReason.NONE
 
     def test_locked_file_returns_process_info(

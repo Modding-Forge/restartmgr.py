@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import datetime
 import logging
 from pathlib import Path
@@ -12,6 +10,7 @@ from typing import Optional
 from ._const import (
     RmAppStatus,
     RmAppType,
+    RmRebootReason,
 )
 from ._session import RmSession
 from ._structs import RM_PROCESS_INFO
@@ -85,6 +84,39 @@ def _convert_process_info(
     )
 
 
+def _query_session(
+    paths: tuple[str | Path, ...],
+) -> tuple[list[RM_PROCESS_INFO], RmRebootReason]:
+    """
+    Opens a Restart Manager session, registers the given
+    paths, queries the process list, and returns the raw
+    result.
+
+    Args:
+        paths (tuple[str | Path, ...]): Absolute file
+            paths.
+
+    Returns:
+        tuple[list[RM_PROCESS_INFO], RmRebootReason]:
+            Raw process info list and reboot reason.
+
+    Raises:
+        ValueError: If no paths are provided.
+        restartmgr.RestartManagerError: On any Restart
+            Manager failure.
+    """
+
+    if not paths:
+        raise ValueError(
+            "At least one file path must be provided."
+        )
+
+    str_paths: list[str] = [str(p) for p in paths]
+    with RmSession() as session:
+        session.register_files(str_paths)
+        return session.get_list()
+
+
 def who_locks(
     *paths: str | Path,
 ) -> list[ProcessInfo]:
@@ -95,7 +127,7 @@ def who_locks(
     This is the primary high-level convenience function.
     It opens a Restart Manager session, registers the
     path(s), queries the process list, and closes the session
-    in a `finally` block.
+    automatically.
 
     Args:
         *paths (str | Path): One or more absolute file paths.
@@ -110,20 +142,8 @@ def who_locks(
             failure.
     """
 
-    if not paths:
-        raise ValueError(
-            "At least one file path must be provided."
-        )
-
-    str_paths: list[str] = [str(p) for p in paths]
-    session = RmSession()
-    try:
-        session.start()
-        session.register_files(str_paths)
-        infos, _ = session.get_list()
-        return [_convert_process_info(i) for i in infos]
-    finally:
-        session.end()
+    infos, _ = _query_session(paths)
+    return [_convert_process_info(i) for i in infos]
 
 
 def get_locking_processes(
@@ -146,23 +166,11 @@ def get_locking_processes(
             failure.
     """
 
-    if not paths:
-        raise ValueError(
-            "At least one file path must be provided."
-        )
-
-    str_paths: list[str] = [str(p) for p in paths]
-    session = RmSession()
-    try:
-        session.start()
-        session.register_files(str_paths)
-        infos, reason = session.get_list()
-        processes: list[ProcessInfo] = [
-            _convert_process_info(i) for i in infos
-        ]
-        return GetListResult(
-            processes=processes,
-            reboot_reason=reason,
-        )
-    finally:
-        session.end()
+    infos, reason = _query_session(paths)
+    processes: tuple[ProcessInfo, ...] = tuple(
+        _convert_process_info(i) for i in infos
+    )
+    return GetListResult(
+        processes=processes,
+        reboot_reason=reason,
+    )

@@ -2,21 +2,23 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import ctypes
 import logging
+import threading
 from typing import Optional
 
 from ._const import CCH_RM_SESSION_KEY
 from ._errors import DllLoadError
 from ._structs import RM_PROCESS_INFO, RM_UNIQUE_PROCESS
 
-log: logging.Logger = logging.getLogger("_dll")
+log: logging.Logger = logging.getLogger("restartmgr.dll")
 """Module-level logger."""
 
 _dll_instance: Optional[ctypes.WinDLL] = None
 """Module-level singleton handle for the loaded rstrtmgr.dll."""
+
+_dll_lock: threading.Lock = threading.Lock()
+"""Lock guarding the lazy initialisation of `_dll_instance`."""
 
 RM_WRITE_STATUS_CALLBACK = ctypes.WINFUNCTYPE(
     None,
@@ -48,17 +50,21 @@ def load_dll() -> ctypes.WinDLL:
     if _dll_instance is not None:
         return _dll_instance
 
-    try:
-        dll = ctypes.WinDLL("rstrtmgr.dll")
-    except OSError as exc:
-        raise DllLoadError(
-            f"Failed to load rstrtmgr.dll: {exc}"
-        ) from exc
+    with _dll_lock:
+        if _dll_instance is not None:
+            return _dll_instance
 
-    _configure_exports(dll)
-    _dll_instance = dll
-    log.debug("rstrtmgr.dll loaded successfully.")
-    return dll
+        try:
+            dll = ctypes.WinDLL("rstrtmgr.dll")
+        except OSError as exc:
+            raise DllLoadError(
+                f"Failed to load rstrtmgr.dll: {exc}"
+            ) from exc
+
+        _configure_exports(dll)
+        _dll_instance = dll
+        log.debug("rstrtmgr.dll loaded successfully.")
+        return dll
 
 
 def _configure_exports(dll: ctypes.WinDLL) -> None:

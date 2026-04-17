@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import pytest
 
 from restartmgr._errors import (
@@ -102,7 +100,7 @@ class TestExceptionHierarchy:
             if cls is DllLoadError:  # noqa: SIM108
                 err = cls("test")
             else:
-                err = cls(42, "test")  # type: ignore[arg-type]
+                err = cls(42, "test")
             with pytest.raises(RestartManagerError):
                 raise err
 
@@ -122,13 +120,13 @@ class TestDllLoadError:
         assert str(err) == "not found"
 
     def test_no_error_code_attribute(self) -> None:
-        """Tests that DllLoadError has no error_code."""
+        """Tests that DllLoadError has error_code 0."""
 
         # given
         err = DllLoadError("oops")
 
         # when / then
-        assert not hasattr(err, "error_code")
+        assert err.error_code == 0
 
 
 class TestSessionError:

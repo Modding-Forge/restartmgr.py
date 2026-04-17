@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import datetime
 from dataclasses import FrozenInstanceError, asdict
 
@@ -204,12 +202,12 @@ class TestGetListResult:
 
         # given / when
         result = GetListResult(
-            processes=[],
+            processes=(),
             reboot_reason=RmRebootReason.NONE,
         )
 
         # then
-        assert result.processes == []
+        assert result.processes == ()
         assert result.reboot_reason == RmRebootReason.NONE
 
     def test_with_processes(self) -> None:
@@ -239,7 +237,7 @@ class TestGetListResult:
 
         # when
         result = GetListResult(
-            processes=[p1, p2],
+            processes=(p1, p2),
             reboot_reason=RmRebootReason.NONE,
         )
 
@@ -253,7 +251,7 @@ class TestGetListResult:
 
         # given / when
         result = GetListResult(
-            processes=[],
+            processes=(),
             reboot_reason=(
                 RmRebootReason.CRITICAL_PROCESS
                 | RmRebootReason.PERMISSION_DENIED
@@ -275,10 +273,10 @@ class TestGetListResult:
 
         # given
         result = GetListResult(
-            processes=[],
+            processes=(),
             reboot_reason=RmRebootReason.NONE,
         )
 
         # when / then
         with pytest.raises(FrozenInstanceError):
-            result.processes = []  # type: ignore[misc]
+            result.processes = ()  # type: ignore[misc]

@@ -2,8 +2,6 @@
 Copyright (c) Modding Forge
 """
 
-from __future__ import annotations
-
 import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -260,6 +258,12 @@ class TestWhoLocks:
             [],
             RmRebootReason.NONE,
         )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when
@@ -267,11 +271,10 @@ class TestWhoLocks:
 
         # then
         assert result == []
-        mock_session.start.assert_called_once()
         mock_session.register_files.assert_called_once_with(
             ["C:\\test.txt"],
         )
-        mock_session.end.assert_called_once()
+        mock_session.__exit__.assert_called_once()
 
     @patch("restartmgr.api.RmSession")
     def test_returns_converted_processes(
@@ -298,6 +301,12 @@ class TestWhoLocks:
             [raw],
             RmRebootReason.NONE,
         )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when
@@ -321,6 +330,12 @@ class TestWhoLocks:
             [],
             RmRebootReason.NONE,
         )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when
@@ -343,6 +358,12 @@ class TestWhoLocks:
         mock_session.get_list.return_value = (
             [],
             RmRebootReason.NONE,
+        )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
         )
         mock_session_cls.return_value = mock_session
         p = Path("C:\\file.txt")
@@ -370,12 +391,18 @@ class TestWhoLocks:
         mock_session.register_files.side_effect = (
             RuntimeError("boom")
         )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when / then
         with pytest.raises(RuntimeError):
             who_locks("C:\\x.txt")
-        mock_session.end.assert_called_once()
+        mock_session.__exit__.assert_called_once()
 
 
 class TestGetLockingProcesses:
@@ -409,6 +436,12 @@ class TestGetLockingProcesses:
             [],
             RmRebootReason.NONE,
         )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when
@@ -416,7 +449,7 @@ class TestGetLockingProcesses:
 
         # then
         assert isinstance(result, GetListResult)
-        assert result.processes == []
+        assert result.processes == ()
         assert result.reboot_reason == RmRebootReason.NONE
 
     @patch("restartmgr.api.RmSession")
@@ -436,6 +469,12 @@ class TestGetLockingProcesses:
             | RmRebootReason.PERMISSION_DENIED
         )
         mock_session.get_list.return_value = ([], reason)
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when
@@ -462,9 +501,15 @@ class TestGetLockingProcesses:
         mock_session.get_list.side_effect = RuntimeError(
             "fail",
         )
+        mock_session.__enter__ = MagicMock(
+            return_value=mock_session,
+        )
+        mock_session.__exit__ = MagicMock(
+            return_value=False,
+        )
         mock_session_cls.return_value = mock_session
 
         # when / then
         with pytest.raises(RuntimeError):
             get_locking_processes("C:\\x.txt")
-        mock_session.end.assert_called_once()
+        mock_session.__exit__.assert_called_once()

@@ -20,8 +20,6 @@ The script will:
 5. Demonstrate that unlocked files return an empty result.
 """
 
-from __future__ import annotations
-
 import json
 import subprocess
 import sys
